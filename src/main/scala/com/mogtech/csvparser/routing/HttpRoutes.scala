@@ -8,8 +8,9 @@ import akka.stream.Materializer
 import akka.util.Timeout
 import com.mogtech.csvparser.processing.FileProcessing
 import com.mogtech.csvparser.utils.ConfigurationSettings
+import com.typesafe.scalalogging.LazyLogging
 
-class HttpRoutes(settings: ConfigurationSettings) {
+class HttpRoutes(settings: ConfigurationSettings) extends LazyLogging {
 
   implicit val timeout: Timeout = Timeout(length = 90, TimeUnit.SECONDS)
 
@@ -25,12 +26,13 @@ class HttpRoutes(settings: ConfigurationSettings) {
             .map(bs => bs.utf8String)
             .map(dataProcessing.processInputString)
             .map { result =>
-              println(result.successfullyProcessed)
+              logger.info(result.successfullyProcessed)
               result
             }
             .runFold("")((_, result) => result.errorsThrown)
 
           onSuccess(errors) { err =>
+            logger.error(err)
             complete(err)
           }
       }
