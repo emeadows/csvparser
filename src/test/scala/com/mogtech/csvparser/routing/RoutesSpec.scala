@@ -20,6 +20,25 @@ class RoutesSpec extends AnyWordSpec with Matchers with ScalatestRouteTest with 
 
   "Routes POST" should {
     "basic test file" in {
+      val uploadData = baseTestFile
+      val multipartForm: FormData.Strict = multipartFormData(uploadData)
+
+      Post("/", multipartForm) ~> httpRoutes.route ~> check {
+        status shouldEqual StatusCodes.OK
+        responseAs[String] shouldEqual "All Data Processed Successfully"
+      }
+    }
+    "basic test file with other line breaks" in {
+      val httpRoutes = new HttpRoutes(conf.copy(newLine = "**"))
+      val uploadData = baseTestFileWithOtherLineBreaks
+      val multipartForm: FormData.Strict = multipartFormData(uploadData)
+
+      Post("/", multipartForm) ~> httpRoutes.route ~> check {
+        status shouldEqual StatusCodes.OK
+        responseAs[String] shouldEqual "All Data Processed Successfully"
+      }
+    }
+    "test file" in {
       val uploadData = testFile
       val multipartForm: FormData.Strict = multipartFormData(uploadData)
 
@@ -35,7 +54,7 @@ class RoutesSpec extends AnyWordSpec with Matchers with ScalatestRouteTest with 
 
       Post("/", multipartForm) ~> httpRoutes.route ~> check {
         status shouldEqual StatusCodes.OK
-        responseAs[String] shouldEqual "The following data could not be processed:\n\nUnbalanced Quotes\n\tKZT\t USD\t0.00\"249\t0.00242478\t#VALUE!\t\tKZT USD\n"
+        responseAs[String] shouldEqual "Unbalanced Result: KZT\"K\nZ\"T\" USD\n\n"
       }
     }
     "testFileWithLineRandomQuotes" in {

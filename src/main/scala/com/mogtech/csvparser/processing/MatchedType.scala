@@ -1,7 +1,8 @@
 package com.mogtech.csvparser.processing
 
 sealed trait MatchedType
-case object IsQuoteMatch extends MatchedType
+sealed trait QuoteMatchedType
+case object IsQuoteMatch extends MatchedType with QuoteMatchedType
 case object IsDelimiterMatch extends MatchedType
-case object Continue extends MatchedType
-case object FailedMatch extends MatchedType
+case object Continue extends MatchedType with QuoteMatchedType
+case object FailedMatch extends MatchedType with QuoteMatchedType

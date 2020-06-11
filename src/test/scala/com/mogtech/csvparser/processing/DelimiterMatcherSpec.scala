@@ -5,25 +5,6 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class DelimiterMatcherSpec extends AnyWordSpec with Matchers {
 
-  "matchOnQuote" should {
-    "return IsQuoteMatch is matches quote type" in {
-      val result = DelimiterMatcher.matchOnQuote(char = 'e', partialMatch = "Matching Valu", quoteType = "Matching Value")
-      result shouldBe DelimiterMatcher("Matching Value", IsQuoteMatch)
-    }
-    "return FailedMatch is does not quote type" in {
-      val result = DelimiterMatcher.matchOnQuote(char = 'F', partialMatch = "Matching ", quoteType = "Matching Value")
-      result shouldBe DelimiterMatcher("Matching F", FailedMatch)
-    }
-    "return Continue if starts match to quote type" in {
-      val result = DelimiterMatcher.matchOnQuote(char = 'M', partialMatch = "", quoteType = "Matching Value")
-      result shouldBe DelimiterMatcher("M", Continue)
-    }
-    "return Continue if partial match to quote type" in {
-      val result = DelimiterMatcher.matchOnQuote(char = 'V', partialMatch = "Matching ", quoteType = "Matching Value")
-      result shouldBe DelimiterMatcher("Matching V", Continue)
-    }
-  }
-
   "matchOnQuoteOrDelimiter" should {
     "return IsQuoteMatch is matches quote type" in {
       val result = DelimiterMatcher.matchOnQuoteOrDelimiter(char = 'e', partialMatch = "Quot", quoteType = "Quote", delimiter = "Delimiter")
@@ -62,7 +43,7 @@ class DelimiterMatcherSpec extends AnyWordSpec with Matchers {
 
   "processMatchedData" should {
     "convert IsQuoteMatch to ProcessedMatch, unchanging result list, updating continue string and inverse boolean " in {
-      val unchangingResult = List(Right("Unchanged result string"))
+      val unchangingResult = List("Unchanged result string")
       val needClosingQuote = true
       val continueString   = "Continue String To Update with "
       val update           = "Quote"
@@ -71,15 +52,15 @@ class DelimiterMatcherSpec extends AnyWordSpec with Matchers {
       result shouldBe ProcessedMatch(unchangingResult, s"$continueString$update", "", !needClosingQuote)
     }
     "convert IsDelimiterMatch to ProcessedMatch, update result list, clear continue string and inverse is false" in {
-      val resultString       = Right("Unchanged result string")
-      val thisCanNeverBeTrue = false
-      val continueString     = "New String will update without delimiter"
+      val resultString          = "Unchanged result string"
+      val thisShouldNeverBeTrue = false
+      val continueString        = "New String will update without delimiter"
       val result = DelimiterMatcher("Delimiter", IsDelimiterMatch)
-        .processDelimiterMatcher(List(resultString), continueString, thisCanNeverBeTrue)
-      result shouldBe ProcessedMatch(List(resultString, Right(continueString)), "", "", needClosingQuote = false)
+        .processDelimiterMatcher(List(resultString), continueString, thisShouldNeverBeTrue)
+      result shouldBe ProcessedMatch(List(resultString, s"$continueString"), "", "", needClosingQuote = false)
     }
     "convert Continue to ProcessedMatch, unchanging result list, unchanged continue string inverse preserved" in {
-      val unchangingResult   = List(Right("Unchanged result string"))
+      val unchangingResult   = List("Unchanged result string")
       val needsToBePreserved = false
       val continueString     = "No change to this"
       val update             = "Continuing As No Match or Fail"
@@ -88,7 +69,7 @@ class DelimiterMatcherSpec extends AnyWordSpec with Matchers {
       result shouldBe ProcessedMatch(unchangingResult, continueString, update, needClosingQuote = needsToBePreserved)
     }
     "convert FailedMatch to ProcessedMatch, unchanging result list, update continue string and inverse preserved" in {
-      val unchangingResult   = List(Right("Unchanged result string"))
+      val unchangingResult   = List("Unchanged result string")
       val needsToBePreserved = true
       val continueString     = "This is updated as the match has "
       val update             = "failed"
