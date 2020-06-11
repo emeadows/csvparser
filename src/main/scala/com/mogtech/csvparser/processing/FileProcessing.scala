@@ -1,18 +1,9 @@
 package com.mogtech.csvparser.processing
 
-import com.mogtech.csvparser.models.{ ErrorType, ResultData }
+import com.mogtech.csvparser.models.{ ErrorType, ResultData, SplitByQuotes }
 import com.mogtech.csvparser.utils.ConfigurationSettings
 
 import scala.util.Try
-
-case class SplitByQuotes(data: List[String], original: String, balanced: Boolean)
-
-object SplitByQuotes {
-  def update(newLine: String, existing: SplitByQuotes): SplitByQuotes = existing.copy(data = existing.data.appended(newLine))
-
-  def updateWithNewQuote(newLine: String, existing: SplitByQuotes): SplitByQuotes =
-    existing.copy(data = existing.data.appended(newLine), balanced = !existing.balanced)
-}
 
 case class FileProcessing(settings: ConfigurationSettings) {
 

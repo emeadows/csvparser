@@ -1,6 +1,6 @@
 package com.mogtech.csvparser.processing
 
-import com.mogtech.csvparser.models.ResultData
+import com.mogtech.csvparser.models.{ ResultData, SplitByQuotes }
 import com.mogtech.csvparser.utils.ConfigurationSettings
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

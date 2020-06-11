@@ -1,5 +1,6 @@
 package com.mogtech.csvparser.processing
 
+import com.mogtech.csvparser.models.SplitByQuotes
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

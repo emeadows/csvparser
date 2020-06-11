@@ -1,5 +1,6 @@
 package com.mogtech.csvparser.processing
 
+import com.mogtech.csvparser.models.SplitByQuotes
 import com.mogtech.csvparser.processing.DelimiterMatcher.matchOnQuoteOrDelimiter
 import com.mogtech.csvparser.processing.QuoteMatcher.matchOnQuote
 
