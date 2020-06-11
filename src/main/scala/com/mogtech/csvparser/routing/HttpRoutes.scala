@@ -45,10 +45,10 @@ class HttpRoutes(settings: ConfigurationSettings)(implicit ec: ExecutionContext)
           dataProcessing.processSplitsByLineBreak(string)
         })
       }
-      .runFold(ResultData(Nil, None, None, balanced = true)) { (result, data) =>
+      .runFold(ResultData(Nil, None, Nil, balanced = true)) { (result, data) =>
         val newResult = dataProcessing.rejoinStringsWhereNeeded(result, data)
         newResult.goodData.foreach(gd => logger.info(gd))
-        newResult.copy(goodData = None)
+        newResult.copy(goodData = Nil)
       }
       .map {
         case ResultData(errors, Some(current), _, false) => s"Unbalanced Result: $current\n${errors.mkString("\n")}"

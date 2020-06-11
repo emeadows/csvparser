@@ -17,15 +17,28 @@ case class FileProcessing(settings: ConfigurationSettings) {
     next match {
       case Left(error: Throwable) => resultData.copy(errors = resultData.errors.appended(ErrorType(error.getLocalizedMessage)))
       case Right(SplitByQuotes(_, input, true)) if resultData.balanced =>
-        resultData.copy(current = None, goodData = updateAsGoodData(resultData.current, input), balanced = true)
+        processInputStringWithDelimiter(updateAsGoodData(resultData.current, input)) match {
+          case Right(data) =>
+            resultData.copy(current = None, goodData = data, balanced = true)
+          case Left(error) =>
+            resultData.copy(errors = resultData.errors.appended(ErrorType(error.getLocalizedMessage)))
+        }
       case Right(SplitByQuotes(_, input, true)) =>
-        resultData.copy(current = addLineBreak(resultData.current, input), goodData = None, balanced = false)
+        resultData.copy(current = addLineBreak(resultData.current, input), goodData = Nil, balanced = false)
       case Right(SplitByQuotes(_, input, false)) if resultData.balanced =>
-        resultData.copy(current = addLineBreak(resultData.current, input), goodData = None, balanced = false)
+        resultData.copy(current = addLineBreak(resultData.current, input), goodData = Nil, balanced = false)
       case Right(SplitByQuotes(_, input, false)) =>
-        resultData.copy(current = None, goodData = updateAsGoodData(resultData.current, input), balanced = true)
+        processInputStringWithDelimiter(updateAsGoodData(resultData.current, input)) match {
+          case Right(data) =>
+            resultData.copy(current = None, goodData = data, balanced = true)
+          case Left(error) =>
+            resultData.copy(errors = resultData.errors.appended(ErrorType(error.getLocalizedMessage)))
+        }
+
     }
 
-  def addLineBreak(previous:     Option[String], input: String): Option[String] = Some(s"${previous.getOrElse("")}$input${settings.newLine}")
-  def updateAsGoodData(previous: Option[String], input: String): Option[String] = Some(s"${previous.getOrElse("")}$input")
+  def addLineBreak(previous: Option[String], input: String): Option[String] = Some(s"${previous.getOrElse("")}$input${settings.newLine}")
+
+  def updateAsGoodData(previous: Option[String], input: String): String =
+    s"${previous.getOrElse("")}${settings.quotedType}$input"
 }
